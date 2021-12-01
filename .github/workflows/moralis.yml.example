@@ -1,0 +1,45 @@
+name: Build then Deploy to Moralis
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    env:
+      # MORALIS DEPLOYEMNT
+      # ==========================================
+      # To configure moralis to auto deploy enter
+      # in the following details:
+      #
+      # Your moralis app id
+      REACT_APP_MORALIS_APP_ID: xxx
+
+      # Your moralis server url
+      REACT_APP_MORALIS_SERVER_URL: xxx
+
+      # Your moralis subdomain
+      moralisSubdomain: xxx.usemoralis.com
+
+      # The following are set in github under this repo > settings > secrets
+      moralisApiKey: ${{ secrets.moralisApiKey }}
+      moralisApiSecret: ${{ secrets.moralisApiSecret }}
+
+    steps:
+      - name: Check out codes
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: "14.x"
+
+      - name: Build App
+        run: |
+          yarn && yarn build
+
+      - name: Deploy App
+        run: |
+          yarn moralis-admin-cli deploy -p ./build
